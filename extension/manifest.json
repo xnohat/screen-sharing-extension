@@ -1,18 +1,33 @@
 {
-  "name": "Screen Sharing",
+  "name": "Screen Sharing Sidebar",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [
     "desktopCapture",
     "tabs",
-    "*://*/*"
+    "activeTab",
+    "tabCapture",
+    "sidePanel",
+    "scripting",
+    "clipboard-write",
+    "system.display"
+  ],
+  "optional_permissions": [
+    "audioCapture"
   ],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["content-script.js"]
-  }]
+  "action": {
+    "default_title": "Screen Sharing"
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

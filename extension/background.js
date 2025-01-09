@@ -1,61 +1,51 @@
 let desktopMediaRequestId = '';
 
-chrome.runtime.onConnect.addListener(port => {
-  port.onMessage.addListener(msg => {
-    if (msg.type === 'SS_UI_REQUEST') {
-      requestScreenSharing(port, msg);
-    }
-    if (msg.type === 'SS_UI_CANCEL') {
-      cancelScreenSharing(msg);
-    }
-  });
+// Handle extension button click to open sidebar
+chrome.action.onClicked.addListener((tab) => {
+  chrome.sidePanel.open({ windowId: tab.windowId });
 });
 
-function requestScreenSharing(port, msg) {
-  const sources = ['screen', 'window', 'tab', 'audio'];
+// Handle messages from sidebar
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'SS_UI_REQUEST') {
+    // Get the current active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        requestScreenSharing(tabs[0]);
+      } else {
+        console.error('No active tab found');
+      }
+    });
+  }
+  if (message.type === 'SS_UI_CANCEL') {
+    cancelScreenSharing();
+  }
+});
+
+function requestScreenSharing(tab) {
+  // Include all possible sources for full screen capture
+  const sources = ['screen', 'window', 'tab'];
 
   desktopMediaRequestId = chrome.desktopCapture.chooseDesktopMedia(
     sources,
-    port.sender.tab,
+    tab,
     streamId => {
       if (streamId) {
-        msg.type = 'SS_DIALOG_SUCCESS';
-        msg.streamId = streamId;
+        chrome.runtime.sendMessage({
+          type: 'SS_DIALOG_SUCCESS',
+          streamId: streamId
+        });
       } else {
-        msg.type = 'SS_DIALOG_CANCEL';
+        chrome.runtime.sendMessage({
+          type: 'SS_DIALOG_CANCEL'
+        });
       }
-      port.postMessage(msg);
     }
   );
 }
 
-function cancelScreenSharing(msg) {
+function cancelScreenSharing() {
   if (desktopMediaRequestId) {
     chrome.desktopCapture.cancelChooseDesktopMedia(desktopMediaRequestId);
   }
 }
-
-// Handle extension installation
-chrome.runtime.onInstalled.addListener(async () => {
-  const tabs = await chrome.tabs.query({});
-  
-  for (const tab of tabs) {
-    // Skip chrome:// pages
-    if (tab.url.match(/(chrome):\/\//gi)) {
-      continue;
-    }
-
-    try {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content-script.js']
-      });
-      console.log('Injected content script into tab:', tab);
-    } catch (err) {
-      // Ignore expected errors for restricted pages
-      if (!err.message.match(/cannot access contents of url/i)) {
-        console.error(err);
-      }
-    }
-  }
-});

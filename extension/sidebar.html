@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: white;
+      width: 100%;
+      min-width: 300px;
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      border: 1px solid #e2e2e2;
+    }
+    #shareLink {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+      word-break: break-all;
+    }
+    .copy-button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+    #start {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" autoplay></video>
+  <p>
+    <button id="start">Share Screen</button>
+  </p>
+  <div id="shareLink">
+    <span id="shareLinkText"></span>
+    <button class="copy-button" id="copyButton">Copy Link</button>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+</html> 
