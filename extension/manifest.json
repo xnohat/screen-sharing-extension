@@ -1,33 +1,18 @@
 {
-  "name": "Screen Sharing Sidebar",
+  "name": "Screen Sharing Extension",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": [
-    "desktopCapture",
-    "tabs",
-    "activeTab",
-    "tabCapture",
-    "sidePanel",
-    "scripting",
-    "clipboard-write",
-    "system.display"
-  ],
-  "optional_permissions": [
-    "audioCapture"
-  ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {
-    "default_title": "Screen Sharing"
-  },
-  "side_panel": {
-    "default_path": "sidebar.html"
-  },
-  "host_permissions": [
-    "*://*/*"
+  "permissions": [
+    "desktopCapture",
+    "tabs",
+    "activeTab"
   ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  "action": {},
+  "web_accessible_resources": [{
+    "resources": ["index.html", "app.js"],
+    "matches": ["<all_urls>"]
+  }]
 }

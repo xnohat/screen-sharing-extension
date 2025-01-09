@@ -1,0 +1,84 @@
+<html>
+<head>
+<style>
+  body {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: -webkit-flex;
+  }
+  video {
+    width: 640px;
+    height: 480px;
+    border: 1px solid #e2e2e2;
+  }
+  #shareLink {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: none;
+  }
+  .copy-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  /* Add styles for the buttons container */
+  .button-container {
+    display: flex;
+    gap: 10px;
+  }
+  #stop {
+    display: none; /* Initially hidden */
+  }
+  .settings {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 640px;
+  }
+  .setting-item {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+  }
+  .setting-item label {
+    width: 120px;
+    margin-right: 10px;
+  }
+  .setting-item input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+  <video id="video" autoplay></video>
+  <div class="settings">
+    <div class="setting-item">
+      <label for="serverUrl">WS Server:</label>
+      <input type="text" id="serverUrl" value="localhost">
+    </div>
+    <div class="setting-item">
+      <label for="serverPort">WS Server Port:</label>
+      <input type="text" id="serverPort" value="443">
+    </div>
+  </div>
+  <p class="button-container">
+    <button id="start">Share Screen</button>
+    <button id="stop">Stop Sharing</button>
+  </p>
+  <div id="shareLink">
+    <span id="shareLinkText"></span>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

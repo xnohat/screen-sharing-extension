@@ -1,24 +1,17 @@
 let desktopMediaRequestId = '';
 
-// Handle extension button click to open sidebar
+// Handle extension button click to open in new tab
 chrome.action.onClicked.addListener((tab) => {
-  chrome.sidePanel.open({ windowId: tab.windowId });
+  chrome.tabs.create({
+    url: chrome.runtime.getURL('index.html')
+  });
 });
 
-// Handle messages from sidebar
+// Handle messages from extension pages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('background.js message', message);
   if (message.type === 'SS_UI_REQUEST') {
-    // Get the current active tab
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        requestScreenSharing(tabs[0]);
-      } else {
-        console.error('No active tab found');
-      }
-    });
-  }
-  if (message.type === 'SS_UI_CANCEL') {
-    cancelScreenSharing();
+    requestScreenSharing(sender.tab);
   }
 });
 
