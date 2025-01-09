@@ -1,0 +1,51 @@
+<html>
+<head>
+<style>
+  body {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: -webkit-flex;
+  }
+  video {
+    width: 640px;
+    height: 480px;
+    border: 1px solid #e2e2e2;
+  }
+  #shareLink {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: none;
+  }
+  .copy-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <video id="video" autoplay></video>
+  <p>
+    <button id="start">Share Screen</button>
+  </p>
+  <div id="shareLink">
+    <span id="shareLinkText"></span>
+    <button class="copy-button" onclick="copyShareLink()">Copy Link</button>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    function copyShareLink() {
+      const shareLinkText = document.getElementById('shareLinkText').textContent;
+      navigator.clipboard.writeText(shareLinkText).then(() => {
+        alert('Share link copied to clipboard!');
+      });
+    }
+  </script>
+</body>
+</html>

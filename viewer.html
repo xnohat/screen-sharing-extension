@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Screen Stream Viewer</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    img {
+      max-width: 100%;
+      max-height: 90vh;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <img id="screenImage" alt="Screen Stream">
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const streamId = urlParams.get('id');
+    
+    if (streamId) {
+      const ws = new WebSocket(`wss://${window.location.hostname}/view?id=${streamId}`);
+      const screenImage = document.getElementById('screenImage');
+
+      ws.onmessage = (event) => {
+        const imageUrl = URL.createObjectURL(event.data);
+        if (screenImage.src) {
+          URL.revokeObjectURL(screenImage.src);
+        }
+        screenImage.src = imageUrl;
+      };
+
+      // Handle connection errors
+      ws.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+      };
+
+      // Handle connection close
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+
+      // Clean up when leaving the page
+      window.addEventListener('beforeunload', () => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+        if (screenImage.src) {
+          URL.revokeObjectURL(screenImage.src);
+        }
+      });
+    }
+  </script>
+</body>
+</html> 
