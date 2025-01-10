@@ -25,7 +25,7 @@
     const streamId = urlParams.get('id');
     
     if (streamId) {
-      const ws = new WebSocket(`wss://${window.location.hostname}/view?id=${streamId}`);
+      const ws = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/view?id=${streamId}`);
       const screenImage = document.getElementById('screenImage');
 
       ws.onmessage = (event) => {

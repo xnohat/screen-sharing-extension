@@ -95,7 +95,7 @@ function handleStream(stream, streamId) {
     // Connect to WebSocket server
     const serverUrl = document.getElementById('serverUrl').value || "localhost";
     const serverPort = document.getElementById('serverPort').value || "443";
-    const ws = new WebSocket(`wss://${serverUrl}:${serverPort}/broadcast?id=${streamId}`);
+    const ws = new WebSocket(`ws://${serverUrl}:${serverPort}/broadcast?id=${streamId}`);
     activeWebSocket = ws;
   
     // WebSocket error handling
@@ -107,7 +107,7 @@ function handleStream(stream, streamId) {
       console.log('WebSocket Connected');
       const shareLink = document.getElementById('shareLink');
       const shareLinkText = document.getElementById('shareLinkText');
-      const viewerUrl = `https://${serverUrl}:${serverPort}/viewer.html?id=${streamId}`;
+      const viewerUrl = `http://${serverUrl}:${serverPort}/viewer.html?id=${streamId}`;
       shareLinkText.textContent = viewerUrl;
       shareLink.style.display = 'block';
       shareLinkText.addEventListener('click', () => {
@@ -152,7 +152,7 @@ function handleStream(stream, streamId) {
     // Start capturing frames once video is playing
     videoElement.onplaying = () => {
       console.log('Video started playing, beginning capture');
-      frameInterval = setInterval(captureAndSendFrame, 100);
+      frameInterval = setInterval(captureAndSendFrame, 40);
   
       // Clean up on stream end
       stream.getVideoTracks()[0].onended = () => {

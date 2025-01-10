@@ -40,17 +40,18 @@ class RateLimiter {
 const rateLimiter = new RateLimiter();
 
 // Create HTTP server (will redirect to HTTPS)
-const httpServer = http.createServer((req, res) => {
+/* const httpServer = http.createServer((req, res) => {
   res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
   res.end();
-});
+}); */
 
 // Create HTTPS server
-const httpsServer = https.createServer({
+/* const httpsServer = https.createServer({
   key: key,
   cert: cert,
   ca: ca
-}, handleRequest);
+}, handleRequest); */
+const httpServer = http.createServer(handleRequest);
 
 // Handle HTTP requests
 function handleRequest(req, res) {
@@ -62,6 +63,13 @@ function handleRequest(req, res) {
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  // Handle favicon.ico requests
+  if (req.url === '/favicon.ico') {
+    res.writeHead(204); // No Content
     res.end();
     return;
   }
@@ -105,7 +113,7 @@ function handleRequest(req, res) {
 }
 
 // Create WebSocket server
-const wss = new WebSocket.Server({ server: httpsServer });
+const wss = new WebSocket.Server({ server: httpServer });
 
 // Add simple token validation
 const validateToken = (token) => {
@@ -169,7 +177,9 @@ wss.on('connection', (ws, req) => {
 // Add this near the top of the file after the requires
 const parseArgs = () => {
   const args = process.argv.slice(2);
-  const config = { port: 443 };
+  const config = { 
+    port: process.env.PORT || 8080  // Changed default port from 443 to 8080 since we're not using HTTPS
+  };
 
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -192,7 +202,7 @@ Options:
           console.error('Error: Port must be a number');
           process.exit(1);
         }
-        config.port = port;
+        config.port = port;  // Command line args override environment variable
         i++; // Skip the next argument since it's the port number
         break;
 
@@ -212,6 +222,6 @@ const config = parseArgs();
   console.log('HTTP server running on port 80');
 }); */
 
-httpsServer.listen(config.port, () => {
-  console.log(`HTTPS server running on port ${config.port}`);
+httpServer.listen(config.port, () => {
+  console.log(`HTTP server running on port ${config.port}`);
 }); 
