@@ -11,11 +11,11 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background.js message', message);
   if (message.type === 'SS_UI_REQUEST') {
-    requestScreenSharing(sender.tab);
+    requestScreenSharing(sender.tab, message.frameRate);
   }
 });
 
-function requestScreenSharing(tab) {
+function requestScreenSharing(tab, frameRate) {
   // Include all possible sources for full screen capture
   const sources = ['screen', 'window', 'tab'];
 
@@ -26,7 +26,8 @@ function requestScreenSharing(tab) {
       if (streamId) {
         chrome.runtime.sendMessage({
           type: 'SS_DIALOG_SUCCESS',
-          streamId: streamId
+          streamId: streamId,
+          frameRate: frameRate
         });
       } else {
         chrome.runtime.sendMessage({

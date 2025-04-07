@@ -7,8 +7,9 @@ let defaultServerPort = '443';
 
 document.getElementById('start').addEventListener('click', () => {
   console.log('start');
+  const frameRate = document.getElementById('frameRate').value || 40;
   // Direct communication with background script
-  chrome.runtime.sendMessage({ type: 'SS_UI_REQUEST', text: 'start' });
+  chrome.runtime.sendMessage({ type: 'SS_UI_REQUEST', text: 'start', frameRate: frameRate });
 });
 
 // Add stop button event listener
@@ -46,10 +47,10 @@ function stopSharing() {
 // Listen for messages from background script
 chrome.runtime.onMessage.addListener((message) => {
   console.log('message', message);
-  const { type, streamId } = message;
+  const { type, streamId, frameRate } = message;
 
   if (type === 'SS_DIALOG_SUCCESS') {
-    startScreenStreamFrom(streamId);
+    startScreenStreamFrom(streamId, frameRate);
   }
 
   if (type === 'SS_DIALOG_CANCEL') {
@@ -57,7 +58,7 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
-function startScreenStreamFrom(streamId) {
+function startScreenStreamFrom(streamId, frameRate) {
   navigator.mediaDevices
     .getUserMedia({
       audio: false,
@@ -71,13 +72,13 @@ function startScreenStreamFrom(streamId) {
       }
     })
     .then(stream => {
-      handleStream(stream, streamId);
+      handleStream(stream, streamId, frameRate);
     })
     .catch(console.error);
 }
 
 // handle stream frame capture and send to ws proxy server
-function handleStream(stream, streamId) {
+function handleStream(stream, streamId, frameRate) {
     activeStream = stream;
     const videoElement = document.getElementById('video');
     videoElement.srcObject = stream;
@@ -151,8 +152,8 @@ function handleStream(stream, streamId) {
   
     // Start capturing frames once video is playing
     videoElement.onplaying = () => {
-      console.log('Video started playing, beginning capture');
-      frameInterval = setInterval(captureAndSendFrame, 40);
+      console.log('Video started playing, beginning capture, with frame rate:', frameRate);
+      frameInterval = setInterval(captureAndSendFrame, frameRate);
   
       // Clean up on stream end
       stream.getVideoTracks()[0].onended = () => {
